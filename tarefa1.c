@@ -21,9 +21,9 @@ int sm =0;
 #define ButtonA 5       //Pino do botão A
 #define ButtonB 6       //Pino do botão B
 #define MatrizLeds 7    //Pino da Matriz de Leds 5x5
-#define LedR 11         //Pino do Led Vermelho
-#define LedG 12         //Pino do Led Verde
-#define LedB 13         //Pino do Led Azul
+#define LedG 11         //Pino do Led Verde
+#define LedB 12         //Pino do Led Azul
+#define LedR 13         //Pino do Led Vermelho
 
 //Função para iniciar pinos e configurá-los como entrada/saída
 void config_pinos(){
@@ -72,20 +72,20 @@ uint32_t cor_binario (double b, double r, double g)
 //Função responsável por acender os leds desejados 
 void acender_leds(Matriz_leds matriz){
     //Primeiro for para percorrer cada linha
-    for (int linha =0; linha<5;linha ++){
+    for (int linha =4;linha>=0;linha--){
         /*
         Devido à ordem de disposição dos leds na matriz de leds 5X5, é necessário
         ter o cuidado para imprimir o desenho na orientação correta. Assim, o if abaixo permite o 
         desenho saia extamente como projetado.
         */
 
-        if(linha%2==0){                             //Se verdadeiro, a numeração das colunas começa em 4 e decrementam
-            for(int coluna=4;coluna>=0;coluna--){
+        if(linha%2){                             //Se verdadeiro, a numeração das colunas começa em 4 e decrementam
+            for(int coluna=0;coluna<5;coluna++){
                 uint32_t cor = cor_binario(matriz[linha][coluna].red,matriz[linha][coluna].green,matriz[linha][coluna].blue);
                 pio_sm_put_blocking(pio, sm, cor);
             };
         }else{                                      //Se falso, a numeração das colunas começa em 0 e incrementam
-            for(int coluna=0;coluna<5;coluna++){
+            for(int coluna=4;coluna>=0;coluna--){
                 uint32_t cor = cor_binario(matriz[linha][coluna].red,matriz[linha][coluna].green,matriz[linha][coluna].blue);
                 pio_sm_put_blocking(pio, sm, cor);
             }
@@ -95,6 +95,7 @@ void acender_leds(Matriz_leds matriz){
 
 //Função que será chamada na interrupção para mostrar números na matriz de leds
 void numeros(int i){
+
     //Definindo cores
     COR_RGB apagado = {0.0,0.0,0.0};
     COR_RGB vermelhoForte = {0.5,0.0,0.0};
@@ -104,22 +105,16 @@ void numeros(int i){
 
     Matriz_leds zero [] =
     {
-        {{vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte, vermelhoClaro},
-        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
-        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
-        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
-        {vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte}},
-        {{vermelhoForte, vermelhoForte, vermelhoClaro, vermelhoForte, vermelhoClaro},
-        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
-        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
-        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
-        {vermelhoForte, vermelhoClaro, vermelhoForte, vermelhoClaro}},
-        {{vermelhoClaro, vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte},
-        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
-        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
-        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
-        {vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte}}
-        
+        {{apagado, vermelhoClaro, vermelhoForte, vermelhoClaro, apagado},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoForte},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoForte},
+        {apagado, vermelhoClaro, vermelhoForte, vermelhoClaro,apagado}},
+        {{apagado, vermelhoForte, vermelhoClaro, vermelhoForte, apagado},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoForte},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoClaro},
+        {apagado, vermelhoForte, vermelhoClaro, vermelhoForte,apagado}}
     }
     ;
 
@@ -195,14 +190,25 @@ void numeros(int i){
         {apagado, apagado, apagado, apagado},
     };
 
-    if(acumulador==1){
-        for(int i =0; i<3;i++){
-            acender_leds(zero[i]);
+    switch(acumulador){
+        case 0:
+            for(int i =0; i<2;i++){
+                acender_leds(zero[i]);
+                gpio_put(LedR,0.5);
+                sleep_ms(100);
+                gpio_put(LedR,0);
+                sleep_ms(100);
+            };
+            break;
+        default:
+            gpio_put(LedR,0.5);
             sleep_ms(100);
-        };
-    }
+            gpio_put(LedR,0);
+            sleep_ms(100);
+            break;
+    }; 
 
-}
+};
 
 void piscar_ledR(){
     for(int i =0;i<6;i++){
@@ -219,6 +225,7 @@ static void interrupcao_Botao(uint gpio, uint32_t events);
 
 int main()
 {
+    int valor_anterior;
     uint offset = pio_add_program(pio, &pio_matrix_program);
 
     stdio_init_all();
@@ -226,18 +233,35 @@ int main()
 
     pio_matrix_program_init(pio, sm, offset, MatrizLeds, 800000, IS_RGBW);
 
+    gpio_put(LedG,0);
+    gpio_put(LedB,0);
     // Configuração da interrupção com callback
     gpio_set_irq_enabled_with_callback(ButtonA, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
-    //gpio_set_irq_enabled_with_callback(ButtonB, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
+    gpio_set_irq_enabled_with_callback(ButtonB, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
 
     while (true) {
-        piscar_ledR();
-        numeros(acumulador);
-    }
-}
+
+        //piscar_ledR();        //Chamando função para piscar Led Vermelho em loop
+        numeros(acumulador); //A variável acumulador passa para a chamada da função o número atualizado
+        valor_anterior=acumulador;
+        if(valor_anterior==acumulador){
+            gpio_put(LedB,0);
+            gpio_put(LedG,0);
+        }
+    };
+};
 
 
 // Função de interrupção com debouncing
+
+/*
+    Ao pressionar o Botão A o led Azul acende e a variável global 'acumulador' incrementa. 
+    Já ao pressionar o botão B, o led Verde acende e a variável global 'acumulador' decrementa. 
+    Quando azul/verde acende ficam acesso apenas durante a mudança de número.
+    Quando a contagem passa de nove, o acumulador volta para 0.
+    E não decrementa para números negativos
+*/
+
 void interrupcao_Botao (uint gpio, uint32_t events)
 {
     // Obtém o tempo atual em microssegundos
@@ -245,8 +269,19 @@ void interrupcao_Botao (uint gpio, uint32_t events)
     
     if (tempo_atual - tempo_anterior > 300000) // 200 ms de debouncing
     {
-        acumulador++;
         tempo_anterior = tempo_atual; // Atualiza o tempo do último evento
-        printf("Mudança Matriz de Leds. A = %d\n", acumulador); 
+        if(gpio==ButtonA){
+            printf("Botão A pressionado!\n");
+            if(acumulador == 9)
+                acumulador = 0;
+            else
+                acumulador++;
+            gpio_put(LedB, 0.001);
+        }else{
+            printf("Botão B pressionado!\n");
+            acumulador--;
+            gpio_put(LedG, 0.001);
+        }
+        printf("Número exibido na Matriz de Leds: %d\n", acumulador);
     }
 }

@@ -5,12 +5,17 @@
 #include <stdlib.h>
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
-#include "hardware/clocks.h"
+#include "hardware/timer.h"
+
 
 //Arquivo .pio
 #include "pio_matrix.pio.h"
 
 #define IS_RGBW false
+static volatile uint32_t tempo_anterior = 0;
+static volatile uint acumulador = 0;
+PIO pio = pio0;
+int sm =0;
 
 //Definindo pinos
 #define ButtonA 5       //Pino do botão A
@@ -65,7 +70,7 @@ uint32_t cor_binario (double b, double r, double g)
 }
 
 //Função responsável por acender os leds desejados 
-void acender_leds(Matriz_leds matriz, PIO pio, uint sm){
+void acender_leds(Matriz_leds matriz){
     //Primeiro for para percorrer cada linha
     for (int linha =0; linha<5;linha ++){
         /*
@@ -88,18 +93,35 @@ void acender_leds(Matriz_leds matriz, PIO pio, uint sm){
     }
 }
 
-void numeros(PIO pio, uint sm){
+//Função que será chamada na interrupção para mostrar números na matriz de leds
+void numeros(int i){
     //Definindo cores
     COR_RGB apagado = {0.0,0.0,0.0};
-    COR_RGB vermelho = {1.0,0.0,0.0};
+    COR_RGB vermelhoForte = {0.5,0.0,0.0};
+    COR_RGB vermelhoClaro = {0.2,0.0,0.0};
 
-    Matriz_leds zero ={
-        {apagado, apagado, vermelho, vermelho},
-        {apagado, apagado, vermelho, apagado},
-        {apagado, apagado, vermelho, vermelho},
-        {apagado, apagado, vermelho, vermelho},
-        {apagado, apagado, vermelho, vermelho},
-    };
+    //Serão estabelecidos 3 frames para cada um dos Leds
+
+    Matriz_leds zero [] =
+    {
+        {{vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte, vermelhoClaro},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte}},
+        {{vermelhoForte, vermelhoForte, vermelhoClaro, vermelhoForte, vermelhoClaro},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
+        {vermelhoForte, vermelhoClaro, vermelhoForte, vermelhoClaro}},
+        {{vermelhoClaro, vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoClaro, apagado, apagado,apagado, vermelhoForte},
+        {vermelhoForte, apagado, apagado,apagado, vermelhoClaro},
+        {vermelhoClaro, vermelhoForte, vermelhoClaro, vermelhoForte}}
+        
+    }
+    ;
 
     Matriz_leds um ={
         {apagado, apagado, apagado, apagado},
@@ -173,6 +195,13 @@ void numeros(PIO pio, uint sm){
         {apagado, apagado, apagado, apagado},
     };
 
+    if(acumulador==1){
+        for(int i =0; i<3;i++){
+            acender_leds(zero[i]);
+            sleep_ms(100);
+        };
+    }
+
 }
 
 void piscar_ledR(){
@@ -184,10 +213,12 @@ void piscar_ledR(){
     }
 };
 
+// Prototipo da função de interrupção
+static void interrupcao_Botao(uint gpio, uint32_t events);
+
+
 int main()
 {
-    PIO pio = pio0;
-    int sm = 0;
     uint offset = pio_add_program(pio, &pio_matrix_program);
 
     stdio_init_all();
@@ -195,7 +226,27 @@ int main()
 
     pio_matrix_program_init(pio, sm, offset, MatrizLeds, 800000, IS_RGBW);
 
+    // Configuração da interrupção com callback
+    gpio_set_irq_enabled_with_callback(ButtonA, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
+    //gpio_set_irq_enabled_with_callback(ButtonB, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
+
     while (true) {
         piscar_ledR();
+        numeros(acumulador);
+    }
+}
+
+
+// Função de interrupção com debouncing
+void interrupcao_Botao (uint gpio, uint32_t events)
+{
+    // Obtém o tempo atual em microssegundos
+    uint32_t tempo_atual = to_us_since_boot(get_absolute_time());
+    
+    if (tempo_atual - tempo_anterior > 300000) // 200 ms de debouncing
+    {
+        acumulador++;
+        tempo_anterior = tempo_atual; // Atualiza o tempo do último evento
+        printf("Mudança Matriz de Leds. A = %d\n", acumulador); 
     }
 }

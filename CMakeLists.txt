@@ -33,7 +33,9 @@ pico_set_program_version(tarefa1 "0.1")
 pico_enable_stdio_uart(tarefa1 1)
 pico_enable_stdio_usb(tarefa1 1)
 target_link_libraries(tarefa1
-        pico_stdlib)
+        pico_stdlib
+        hardware_pio
+        )
 target_include_directories(tarefa1 PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )

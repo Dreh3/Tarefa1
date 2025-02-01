@@ -46,4 +46,6 @@ O projeto hospedado nesse repositório possui as configurações básicas exigid
 ### 3. Formatação dos números
 A formatação usada nos números pode ser previamente visualizada abaixo:
 
+As imagens acima são do simulador Wokwi integrado, para visualizar o resultado na placa é necessário assiste ao vídeo.
+
 Se necessário, é possível ajustar as padrões de intensidade das cores na função numeros(), modificando os valores das variáveis inten e inten2, sendo, o tom mais forte e o mais fraco, respectivamente.

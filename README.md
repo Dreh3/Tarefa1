@@ -26,9 +26,12 @@ __Uma breve explicação do desenvolvimento e resultados obtidos podem ser visto
 
 ## Detalhamento Do Desenvolvimento
 
-###1. Configurações adicionais
- O projeto hospedado nesse repositório possui as configurações básicas exigidas, já enumeradas acima. Em composição a isso, foi adicionado um efeito visual na exibição dos números com transição entre duas tonalidades para cinco diferntes cores utilizadas: azul, vermelho, marrom, magenta e verde (obtidos pela combinação de vermelho, verde e azul).
+###1. Configurações adicionais<br>
+ O projeto hospedado nesse repositório possui as configurações básicas exigidas, já enumeradas acima. Em composição a isso, foi adicionado um efeito visual na exibição dos números com transição entre duas tonalidades para as cinco diferentes cores utilizadas: azul, vermelho, marrom, magenta e verde (obtidos pela combinação de vermelho, verde e azul).
 
-###2. Explicação do funcionamento
+###2. Explicação do funcionamento<br>
 A utilização de dois botões permitiu implementar um tratamento de debouncing via software aliado a rotinas de interupção, detalhadas na aula.
-A matriz de leds 5x5 inicia com o número 0 sendo mostrado. O valor muda de acordo com o acionamento dos botões. Assim, ao pressionar o botão A
+A matriz de leds 5x5 inicia com o número 0 sendo mostrado. O valor muda de acordo com o acionamento dos botões. Assim, ao pressionar o botão A, o número passa de 0 para 1, e vai incrementando se o Botão A for pressioando novamente. Em contrapartida, ao pressionar o Botão B, sendo o número exibido no momento 1, ele passará a ser 0. Ademais, ao pressionar o Botão A estando com o número em exibição 9, o valor voltará a ser 0, reiniciando a contagem. O mesmo ocorre com o Botão B, caso o valor seja 0, ele ao decrementar passará a ser 9, estabelecendo-se, assim, um ciclo entre os números. 
+
+###3. Formatação dos números<br>
+A formatação usada nos números pode ser previamente visualizada abaixo:

@@ -28,7 +28,7 @@ __Uma breve explicação do desenvolvimento e resultados obtidos podem ser visto
 
 ### 1. Explicação do funcionamento
 
-A matriz de leds 5x5 inicia com o número 0 sendo mostrado. O valor muda de acordo com o acionamento dos botões. Assim, ao pressionar o botão A, o número passa de 0 para 1, e vai incrementando se o Botão A for pressioando novamente. Em contrapartida, ao pressionar o Botão B, sendo o número exibido no momento 1, ele passará a ser 0. Ademais, ao pressionar o Botão A estando com o número em exibição 9, o valor voltará a ser 0, reiniciando a contagem. O mesmo ocorre com o Botão B, caso o valor seja 0, ele ao decrementar passará a ser 9, estabelecendo-se, assim, um ciclo entre os números. 
+A matriz de leds 5x5 inicia com o número 0 sendo mostrado. O valor muda de acordo com o acionamento dos botões. Assim, ao pressionar o botão A, o número passa de 0 para 1, e vai incrementando se o Botão A for pressionado novamente. Em contrapartida, ao pressionar o Botão B, sendo o número exibido no momento 1, ele passará a ser 0. Ademais, ao pressionar o Botão A estando com o número em exibição 9, o valor voltará a ser 0, reiniciando a contagem. O mesmo ocorre com o Botão B, caso o valor seja 0, ele ao decrementar passará a ser 9, estabelecendo-se, assim, um ciclo entre os números. 
 A utilização de dois botões permitiu implementar um tratamento de debouncing via software aliado a rotinas de interupção, detalhadas na aula. Foi utilizada a seguinte função de interrupção:
 ```bash
 static void interrupcao_Botao(uint gpio, uint32_t events);
@@ -41,7 +41,9 @@ gpio_set_irq_enabled_with_callback(ButtonB, GPIO_IRQ_EDGE_FALL, true, &interrupc
 É possível perceber que os dois botões chamam a mesma função, interrupcao_Botao(). O diferenciamento entre os botões é feito dentro da função a partie de um if, que incrementa ou decrementa de acordo com o desejado, depois de uma verificação deboucing que estabelece um tempo de 200ms para aceitar que o botão foi pressionado.
 
 ### 2. Funcionalidades adicionais
-O projeto hospedado nesse repositório possui as configurações básicas exigidas, já enumeradas acima. Em composição a isso, foi adicionado um efeito visual na exibição dos números com transição entre duas tonalidades para as cinco diferentes cores utilizadas: azul, vermelho, marrom, magenta e verde (obtidos pela combinação de vermelho, verde e azul).
+O projeto hospedado nesse repositório possui as configurações básicas exigidas, já enumeradas acima. Em composição a isso, foi adicionado um efeito visual na exibição dos números com transição entre duas tonalidades para as cinco diferentes cores utilizadas: azul, vermelho, marrom, magenta e verde (obtidos pela combinação de vermelho, verde e azul). E por último, o Botão A ao ser pressionado acende brevemente o led Azul (pino 12) e, por sua vez, o Botão B acende o led Verde (pino 11).
 
 ### 3. Formatação dos números
 A formatação usada nos números pode ser previamente visualizada abaixo:
+
+Se necessário, é possível ajustar as padrões de intensidade das cores na função numeros(), modificando os valores das variáveis inten e inten2, sendo, o tom mais forte e o mais fraco, respectivamente.

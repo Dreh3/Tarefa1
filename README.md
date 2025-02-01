@@ -48,6 +48,14 @@ A formatação usada nos números pode ser previamente visualizada abaixo:
 <div align="center">
   <img src="https://github.com/Dreh3/Tarefa1/blob/fb1782612d69e62c9580bbad365e0a59a8eaa65a/zero.png?raw=true" alt="imagem" width="300"/>
 </div>
-As imagens acima são do simulador Wokwi integrado, para visualizar o resultado na placa é necessário assiste ao vídeo.
+<div align="center">
+  <img src="https://github.com/Dreh3/Tarefa1/blob/fb1782612d69e62c9580bbad365e0a59a8eaa65a/um.png?raw=true" alt="imagem" width="300"/>
+</div>
+<div align="center">
+  <img src="https://github.com/Dreh3/Tarefa1/blob/fb1782612d69e62c9580bbad365e0a59a8eaa65a/sete.png?raw=true" alt="imagem" width="300"/>
+</div>
+
+As imagens acima são do simulador Wokwi integrado. Os outros números podem ser visualizados nas imagens presentes no repositório. 
+O resultado na placa é mostrado no vídeo.
 
 Se necessário, é possível ajustar as padrões de intensidade das cores na função numeros(), modificando os valores das variáveis inten e inten2, sendo, o tom mais forte e o mais fraco, respectivamente.

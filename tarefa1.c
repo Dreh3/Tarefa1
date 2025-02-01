@@ -1,5 +1,16 @@
 //Código desenvolvido por Andressa Sousa Fonseca
 
+/*
+    A matriz de leds 5x5 inicia com o número 0 sendo mostrado. 
+    O valor muda de acordo com o acionamento dos botões. 
+    Assim, ao pressionar o botão A, o número passa de 0 para 1, e 
+    vai incrementando se o Botão A for pressionado novamente. 
+    Em contrapartida, ao pressionar o Botão B, sendo o número exibido no momento 1, 
+    ele passará a ser 0. Ademais, ao pressionar o Botão A estando com o número em exibição 9, 
+    o valor voltará a ser 0, reiniciando a contagem. O mesmo ocorre com o Botão B, 
+    caso o valor seja 0, ele ao decrementar passará a ser 9, estabelecendo-se, assim, um ciclo entre os números.
+*/
+
 //Incluindo bibliotecas necessárias
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +57,7 @@ void config_pinos(){
 };
 
                                //Configurações para a matriz de Leds
-                               
+
 //Definindo struct para cores personalizadas
 typedef struct {
     double red;
@@ -122,7 +133,7 @@ void numeros(){
     COR_RGB magentaClaro = {0.25*inten2,0.0,0.25*inten2};
 
 
-    //Foram estabelecidos 6 frames para cada um dos Leds
+    //Foram estabelecidos 6 frames para cada um dos números
 
     //Matriz que mostrará o zero com transição de tonalidade da esquerda para a direita
     Matriz_leds zero [] =

@@ -16,13 +16,13 @@ __Os Componentes necessários para a execução da atividade são:__
 4) Botão B conectado à GPIO 6.
 
 __As funcionalidade básicas especificadas para a atividade são:__
-1) O LED vermelho do LED RGB deve piscar continuamente 5 vezes por segundo..
+1) O LED vermelho do LED RGB deve piscar continuamente 5 vezes por segundo.
 2) O botão A deve incrementar o número exibido na matriz de LEDs cada vez que for pressionado.
 3) O botão B deve decrementar o número exibido na matriz de LEDs cada vez que for pressionado.
 4) Os LEDs WS2812 devem ser usados para criar efeitos visuais representando números de 0 a 9.
 
 
-__Uma breve explicação do desenvolvimento e resultados obtidos podem ser vistos no vídeo endereçado no seguine link: [Aplicação de Rotinas de Interrupção]().__
+__Uma breve explicação do desenvolvimento e resultados obtidos podem ser vistos no vídeo endereçado no seguine link: [Aplicação de Rotinas de Interrupção](https://youtu.be/7CeK5zgrJB4?feature=shared).__
 
 ## Detalhamento Do Desenvolvimento
 
@@ -38,7 +38,7 @@ Na main, a função acima é chamada pela função de interrupção com callback
 gpio_set_irq_enabled_with_callback(ButtonA, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
 gpio_set_irq_enabled_with_callback(ButtonB, GPIO_IRQ_EDGE_FALL, true, &interrupcao_Botao);
 ```
-É possível perceber que os dois botões chamam a mesma função, interrupcao_Botao(). O diferenciamento entre os botões é feito dentro da função a partie de um if, que incrementa ou decrementa de acordo com o desejado, depois de uma verificação deboucing que estabelece um tempo de 200ms para aceitar que o botão foi pressionado.
+É possível perceber que os dois botões chamam a mesma função, interrupcao_Botao(). O diferenciamento entre os botões é feito dentro da função a partir de um if, que incrementa ou decrementa de acordo com o desejado, considerando-se um tempo de 200ms para aceitar que o botão foi pressionado.
 
 ### 2. Funcionalidades adicionais
 O projeto hospedado nesse repositório possui as configurações básicas exigidas, já enumeradas acima. Em composição a isso, foi adicionado um efeito visual na exibição dos números com transição entre duas tonalidades para as cinco diferentes cores utilizadas: azul, vermelho, marrom, magenta e verde (obtidos pela combinação de vermelho, verde e azul). E por último, o Botão A ao ser pressionado acende brevemente o led Azul (pino 12) e, por sua vez, o Botão B acende o led Verde (pino 11).
